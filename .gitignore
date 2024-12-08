@@ -1,6 +1,8 @@
 # Add Dataset and Results file directories, but not their contents
 files/*
 results/*
+!files/.gitkeep
+!results/.gitkeep
 
 #Ignore pyvenv files
 myvenv/
