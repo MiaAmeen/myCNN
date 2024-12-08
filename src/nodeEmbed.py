@@ -25,43 +25,60 @@ class NodeEmbed:
         self.model = SentenceTransformer(self.model_name)
         self.pairs = {}
 
-    def train_cnn(self, file: str) -> dict:
+    def train_cnn(self, pairs_file: str, node_files: list) -> dict:
         """
         loads data
         """
         # Open the CSV file in read/write mode
-        with open(f"{self.file_dir}{file}", "r") as author_pairs:
-            reader = csv.reader(author_pairs)
-            data_loader = {}
+        with open(f"{self.file_dir}{pairs_file}", "r") as author_pairs:
+            reader = csv.reader(author_pairs)            
+            node_files = [self.file_dir + filename for filename in node_files]
+            graph = KGE(node_files)
 
+            snes = []
+            tnes = []
             for row in reader:
-                graph = KGE([f"{self.file_dir}{row[0].strip()}"])
-                snes = graph.create_neighbor_embeddings(row[1].strip())[0]
-                tnes = graph.create_neighbor_embeddings(row[2].strip())[0]
+                snes.append(graph.create_attr_val_embeddings(row[1].strip(), minRows = 15))
+                tnes.append(graph.create_attr_val_embeddings(row[2].strip(), minRows = 15))
 
-                data_loader[row[0].strip()] = [snes, tnes]
+                # data_loader[row[0].strip()] = [snes, tnes]
                 # sne = self.create_cnn_embeddings(data_loader)
                 # pairs[row[0].strip()] = [sne, tne]
 
-            cnn = NodeEmbeddingCNN(data_loader)
-            cnn.train()
+            snes = torch.stack(snes)
+            tnes = torch.stack(tnes)
+            cnn = NodeEmbeddingCNN(batch_size=snes.shape[1])
+            cnn.train(snes, tnes)
 
+    def test_cnn(self, pairs_file: str, node_files: list):
+        """
+        tests cnn
+        """
+        # Open the CSV file in read/write mode
+        with open(f"{self.file_dir}{pairs_file}", "r") as author_pairs:
+            reader = csv.reader(author_pairs)            
+            node_files = [self.file_dir + filename for filename in node_files]
+            graph = KGE(node_files)
 
-        # first_key = next(iter(pairs))
-        # with open("source.txt", "w") as f:
-        #     f.write(np.array2string(pairs[first_key][0], separator=","))
-        # with open("target.txt", "w") as f:
-        #     f.write(np.array2string(pairs[first_key][1], separator=","))
+            snes = []
+            tnes = []
+            for row in reader:
+                snes.append(graph.create_attr_val_embeddings(row[1].strip(), minRows = 11))
+                tnes.append(graph.create_attr_val_embeddings(row[2].strip(), minRows = 11))
 
-    # def create_cnn_embeddings(self, data_loader):
-    #     cnn = CNN(data_loader)
-    #     cnn.train()
-
-    #     first_key = next(iter(data_loader))
-    #     return cnn.test(data_loader[first_key][0])
+            snes = torch.stack(snes)
+            tnes = torch.stack(tnes)
+            cnn = NodeEmbeddingCNN(batch_size=snes.shape[1])
+            sne = cnn.test(snes)
+            tne = cnn.test(tnes)
+            diff = torch.cosine_similarity(sne, tne, dim=1)
+            print(diff)
 
 
 if __name__ == "__main__":
+
     file_dir = "./files/"
     NE = NodeEmbed(file_dir)
-    NE.train_cnn("authorPairs.csv")
+    NE.train_cnn("training_pairs.csv", ["semopenalex.ttl", "wikidata.ttl"])
+    NE.test_cnn("training_pairs.csv", ["semopenalex.ttl", "wikidata.ttl"])
+
