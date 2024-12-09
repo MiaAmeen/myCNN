@@ -1,0 +1,18 @@
+# Add Dataset and Results file directories, but not their contents
+files/*
+results/*
+!files/.gitkeep
+!results/.gitkeep
+
+#Ignore pyvenv files
+myvenv/
+__pycache__/
+
+#Ignore comunica and all its js node module dependencies
+node_modules/
+src/comunica
+package-lock.json
+package.json
+
+#Ignore pytorch saved config path
+cnn_config.pth
