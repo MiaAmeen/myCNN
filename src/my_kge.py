@@ -315,8 +315,8 @@ if __name__ == "__main__":
                         default=None,
                         help="Text to be matched against graph nodes")
     parser.add_argument("-n", "--node_match",
-                        default=None,
-                        help="Match all graphs nodes against each other")
+                    action='store_true',
+                    help="Match all graph nodes against each other (flag)")
     args = parser.parse_args()
 
     try:
