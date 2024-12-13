@@ -20,3 +20,28 @@ python3 -m pip install -r requirements.txt
 
 # Options
 
+### Arguments to run simple unsupervised KGE model:
+
+- **`-f`, `--file_dir`** (default: `FILE_DIR`)
+  - Description: Specify the directory containing the list of files to be parsed.
+  - Example:
+    ```bash
+    python3 my_kge.py -f /path/to/files
+    ```
+
+- **`-t`, `--text_match`** (default: `None`)
+  - Description: Provide text to match against graph nodes.
+  - Example:
+    ```bash
+    python my_kge.py -t "search text"
+    ```
+
+- **`-n`, `--node_match`**
+  - Description: A flag to match all graph nodes against each other. If included, this flag will be set to `True`. By default, it is `False`.
+  - Example:
+    ```bash
+    python my_kge.py -n
+    ```
+
+
+
