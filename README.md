@@ -1,3 +1,6 @@
+# Documentation
+Can be accessed [here](https://docs.google.com/document/d/1mGehrAw9oTr15yJbZZYTmkP1GT85za_Rvk9-iJZpD-Y/edit?usp=sharing).
+
 # Setup and Installation Procedure
 
 ### Step 1: Clone the repository from GitHub
